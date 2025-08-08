@@ -1,0 +1,130 @@
+/* Import Google font */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap');
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Open Sans', sans-serif;
+  touch-action: manipulation;
+}
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #E3F2FD;
+  overflow: hidden;
+}
+.wrapper {
+  width: 65vmin;
+  height: 70vmin;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 5px;
+  background: #293447;
+  box-shadow: 0 20px 40px rgba(52, 87, 220, 0.2);
+  position: relative;
+}
+.game-details {
+  color: #B8C6DC;
+  font-weight: 500;
+  font-size: 1.2rem;
+  padding: 20px 27px;
+  display: flex;
+  justify-content: space-between;
+}
+.play-board {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  background: #212837;
+  grid-template: repeat(30, 1fr) / repeat(30, 1fr);
+}
+.play-board .food {
+  background: #FF003D;
+  border-radius: 50%;
+}
+.play-board .head {
+  background: #60CBFF;
+  border-radius: 4px;
+}
+.play-board .body {
+  background: #60CBFF;
+  border-radius: 2px;
+}
+
+.controls {
+  display: none;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.controls i {
+  padding: 25px 0;
+  text-align: center;
+  font-size: 1.3rem;
+  color: #B8C6DC;
+  width: calc(100% / 4);
+  cursor: pointer;
+  border-right: 1px solid #171B26;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.game-message {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(41, 52, 71, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #B8C6DC;
+  text-align: center;
+  padding: 20px;
+  z-index: 10;
+}
+
+.game-message p {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.start-btn {
+  padding: 10px 25px;
+  background: #60CBFF;
+  color: #293447;
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 800px) {
+  .wrapper {
+    width: 95vmin;
+    height: 95vmin;
+  }
+  .game-details {
+    font-size: 1rem;
+    padding: 15px 20px;
+  }
+  .controls {
+    display: flex;
+  }
+  .controls i {
+    padding: 15px 0;
+    font-size: 1rem;
+  }
+}
+
+@media screen and (max-height: 600px) {
+  .wrapper {
+    height: 95vmin;
+  }
+}
