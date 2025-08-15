@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!-- O atributo lang será definido dinamicamente pelo JavaScript -->
+<html lang="pt-BR" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Snake Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="game-header">
+        <h1 class="game-title">SNAKE PRO</h1>
+        <div class="game-details">
+          <div class="score-container">
+            <span class="score" data-translate="score">Score: 0</span>
+            <span class="high-score" data-translate="highScore">High Score: 0</span>
+          </div>
+          <div class="game-controls">
+            <button class="pause-btn" id="pauseBtn" aria-label="Pause Game"><i class="fas fa-pause"></i></button>
+            <button class="restart-btn" id="restartBtn" aria-label="Restart Game"><i class="fas fa-redo"></i></button>
+          </div>
+        </div>
+        <div class="power-up-status" id="powerUpStatus"></div>
+      </div>
+      
+      <div class="play-board"></div>
+      
+      <div class="controls">
+        <i data-key="ArrowLeft" class="fa-solid fa-arrow-left-long"></i>
+        <i data-key="ArrowUp" class="fa-solid fa-arrow-up-long"></i>
+        <i data-key="ArrowRight" class="fa-solid fa-arrow-right-long"></i>
+        <i data-key="ArrowDown" class="fa-solid fa-arrow-down-long"></i>
+      </div>
+      
+      <div class="game-message" id="gameMessage">
+        <div class="message-content">
+          <h2 class="message-title">SNAKE PRO</h2>
+          <p class="message-text" data-translate="instructions">Use as setas ou deslize para mover. Evite as paredes e as minas!</p>
+          
+          <div class="difficulty-selector">
+            <h3 data-translate="difficulty">Escolha a Dificuldade:</h3>
+            <div class="difficulty-buttons">
+              <button class="difficulty-btn active" data-difficulty="easy"><i class="fas fa-seedling"></i> <span data-translate="easy">Fácil</span></button>
+              <button class="difficulty-btn" data-difficulty="medium"><i class="fas fa-fire"></i> <span data-translate="medium">Médio</span></button>
+              <button class="difficulty-btn" data-difficulty="hard"><i class="fas fa-bolt"></i> <span data-translate="hard">Difícil</span></button>
+            </div>
+          </div>
+          
+          
+        <div class="map-selector">
+          <h3 data-translate="chooseMap">Escolha o Mapa:</h3>
+          <div class="map-buttons">
+            <button class="map-btn active" data-map="classic"><i class="fas fa-circle"></i> <span>Clássico</span></button>
+            <button class="map-btn" data-map="forest"><i class="fas fa-tree"></i> <span>Floresta</span></button>
+            <button class="map-btn" data-map="desert"><i class="fas fa-sun"></i> <span>Deserto</span></button>
+            <button class="map-btn" data-map="space"><i class="fas fa-meteor"></i> <span>Espaço</span></button>
+          </div>
+        </div>
+
+        <button class="start-btn"><i class="fas fa-play"></i> <span data-translate="startGame">Iniciar Jogo</span></button>
+        </div>
+      </div>
+      
+      <div class="countdown" id="countdown"><div class="countdown-number">3</div></div>
+      
+      <div class="pause-overlay" id="pauseOverlay">
+        <div class="pause-content">
+          <h2 data-translate="paused">JOGO PAUSADO</h2>
+          <p data-translate="resumeInstructions">Pressione ESPAÇO ou clique para continuar</p>
+          <button class="resume-btn" id="resumeBtn"><i class="fas fa-play"></i> <span data-translate="resume">Continuar</span></button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
