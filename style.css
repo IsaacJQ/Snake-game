@@ -7,6 +7,7 @@
   --board-bg: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
   --snake-head: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
   --snake-body: linear-gradient(135deg, #00b8e6 0%, #0088bb 100%);
+  --snake-head-glow: rgba(0, 212, 255, 0.5);
   --food-color: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
   --mine-color: linear-gradient(135deg, #ff8c00 0%, #cc7000 100%);
   --shield-powerup: linear-gradient(135deg, #32ff7e 0%, #21a656 100%);
@@ -28,6 +29,7 @@
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
   touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -113,7 +115,7 @@ body::before {
   gap: 10px;
 }
 
-.pause-btn, .restart-btn {
+.pause-btn, .restart-btn, .sound-btn {
   background: var(--button-primary);
   border: none;
   border-radius: 8px;
@@ -129,10 +131,14 @@ body::before {
   justify-content: center;
 }
 
-.pause-btn:hover, .restart-btn:hover {
+.pause-btn:hover, .restart-btn:hover, .sound-btn:hover {
   background: var(--button-hover);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+}
+
+.sound-btn.muted {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .power-up-status {
@@ -167,10 +173,11 @@ body::before {
   display: grid;
   background: var(--board-bg);
   grid-template: repeat(25, 1fr) / repeat(25, 1fr);
-  gap: 1px;
+  gap: 0;
   padding: 10px;
   position: relative;
   overflow: hidden;
+  transition: background 0.5s ease;
 }
 
 .play-board::before {
@@ -192,6 +199,23 @@ body::before {
   border-radius: 50%;
   animation: foodPulse 2s ease-in-out infinite;
   box-shadow: 0 0 10px rgba(255, 71, 87, 0.6);
+  position: relative;
+}
+
+.play-board .food.banana {
+  background: linear-gradient(135deg, #feca57 0%, #ff9f43 100%);
+  box-shadow: 0 0 10px rgba(254, 202, 87, 0.6);
+}
+
+.play-board .food.chili {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff3838 100%);
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+}
+
+.play-board .food.star {
+  background: linear-gradient(135deg, #fff200 0%, #f9ca24 100%);
+  box-shadow: 0 0 15px rgba(255, 242, 0, 0.7);
+  animation: starPulse 0.5s infinite alternate;
 }
 
 .play-board .mine {
@@ -200,14 +224,13 @@ body::before {
   animation: minePulse 1.5s ease-in-out infinite;
   box-shadow: 0 0 12px rgba(255, 140, 0, 0.7);
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .play-board .mine::before {
   content: '💣';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   font-size: 0.7em;
 }
 
@@ -234,9 +257,10 @@ body::before {
 .play-board .head {
   background: var(--snake-head);
   border-radius: 6px;
-  box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 8px var(--snake-head-glow);
   animation: snakeGlow 1.5s ease-in-out infinite alternate;
   z-index: 2;
+  position: relative;
 }
 
 .play-board .body {
@@ -251,7 +275,7 @@ body::before {
 }
 
 .snake.shielded .body {
-  background: linear-gradient(135deg, #32ff7e, #21a656);
+  background: linear-gradient(135deg, #32ff7e 0%, #21a656 100%);
 }
 
 .controls {
@@ -273,7 +297,9 @@ body::before {
   transition: var(--transition);
 }
 
-.controls i:last-child { border-right: none; }
+.controls i:last-child { 
+  border-right: none; 
+}
 
 .controls i:hover, .controls i:active {
   background: rgba(0, 212, 255, 0.1);
@@ -319,20 +345,79 @@ body::before {
   line-height: 1.6;
 }
 
-.difficulty-selector h3 {
+.color-selector {
+  margin-bottom: 30px;
+}
+
+.color-selector h3 {
   color: var(--text-primary);
   margin-bottom: 20px;
   font-size: 1.2rem;
 }
 
-.difficulty-buttons {
+.color-options {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.color-btn {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-btn:hover {
+  transform: scale(1.1);
+  border-color: var(--text-accent);
+}
+
+.color-btn.active {
+  border-color: var(--text-accent);
+  box-shadow: 0 0 15px var(--text-accent);
+}
+
+.color-btn.active::after {
+  content: '✓';
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+}
+
+/* Cores predefinidas */
+.color-btn.blue { background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); }
+.color-btn.green { background: linear-gradient(135deg, #32ff7e 0%, #21a656 100%); }
+.color-btn.red { background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%); }
+.color-btn.purple { background: linear-gradient(135deg, #a55eea 0%, #8b46ff 100%); }
+.color-btn.orange { background: linear-gradient(135deg, #ff8c00 0%, #ff6b35 100%); }
+.color-btn.pink { background: linear-gradient(135deg, #ff6b9d 0%, #ff3867 100%); }
+.color-btn.yellow { background: linear-gradient(135deg, #feca57 0%, #ff9f43 100%); }
+.color-btn.cyan { background: linear-gradient(135deg, #00d2d3 0%, #54a0ff 100%); }
+
+.difficulty-selector h3, .map-selector h3 {
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+}
+
+.difficulty-buttons, .map-buttons {
   display: flex;
   gap: 15px;
   justify-content: center;
   margin-bottom: 30px;
+  flex-wrap: wrap;
 }
 
-.difficulty-btn {
+.difficulty-btn, .map-btn {
   background: rgba(255, 255, 255, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
@@ -345,16 +430,17 @@ body::before {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 80px;
+  min-width: 100px;
 }
 
-.difficulty-btn:hover {
+.difficulty-btn:hover, .map-btn:hover {
   background: rgba(0, 212, 255, 0.2);
   border-color: var(--text-accent);
   color: var(--text-accent);
+  transform: translateY(-2px);
 }
 
-.difficulty-btn.active {
+.difficulty-btn.active, .map-btn.active {
   background: var(--button-primary);
   border-color: var(--text-accent);
   color: var(--primary-bg);
@@ -381,13 +467,14 @@ body::before {
 .start-btn:hover, .resume-btn:hover {
   background: var(--button-hover);
   transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
 }
 
 .countdown-number {
   font-family: 'Orbitron', monospace;
   font-size: 6rem;
   color: var(--text-accent);
-  animation: countdownPulse 1s ease-in-out infinite;
+  animation: countdownPulse 1s ease-in-out;
 }
 
 .pause-overlay h2 {
@@ -402,51 +489,116 @@ body::before {
   margin-bottom: 25px;
 }
 
+/* Obstacle styles */
+.obstacle {
+  background: linear-gradient(135deg, #555 0%, #333 100%);
+  border-radius: 3px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5), 0 0 5px rgba(255, 255, 255, 0.08);
+}
+
 /* Animations */
 @keyframes fadeInUp { 
-  from { opacity: 0; transform: translateY(30px); } 
-  to { opacity: 1; transform: translateY(0); } 
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  } 
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  } 
 }
 
 @keyframes foodPulse { 
-  0%, 100% { transform: scale(1); } 
-  50% { transform: scale(1.1); } 
+  0%, 100% { 
+    transform: scale(1); 
+  } 
+  50% { 
+    transform: scale(1.1); 
+  } 
 }
 
 @keyframes minePulse { 
-  0%, 100% { transform: scale(1) rotate(0deg); } 
-  50% { transform: scale(1.1) rotate(45deg); } 
+  0%, 100% { 
+    transform: scale(1) rotate(0deg); 
+  } 
+  50% { 
+    transform: scale(1.1) rotate(45deg); 
+  } 
 }
 
 @keyframes powerUpPulse { 
-  0%, 100% { transform: scale(1); } 
-  50% { transform: scale(1.15); } 
+  0%, 100% { 
+    transform: scale(1); 
+  } 
+  50% { 
+    transform: scale(1.15); 
+  } 
 }
 
 @keyframes snakeGlow { 
-  from { box-shadow: 0 0 8px rgba(0, 212, 255, 0.5); } 
-  to { box-shadow: 0 0 15px rgba(0, 212, 255, 0.8); } 
+  from { 
+    box-shadow: 0 0 8px var(--snake-head-glow); 
+  } 
+  to { 
+    box-shadow: 0 0 15px var(--snake-head-glow); 
+  } 
 }
 
 @keyframes countdownPulse { 
-  0% { transform: scale(0.8); opacity: 0; } 
-  50% { transform: scale(1.1); opacity: 1; } 
-  100% { transform: scale(1); opacity: 1; } 
+  0% { 
+    transform: scale(0.8); 
+    opacity: 0; 
+  } 
+  50% { 
+    transform: scale(1.1); 
+    opacity: 1; 
+  } 
+  100% { 
+    transform: scale(1); 
+    opacity: 1; 
+  } 
 }
 
 @keyframes shake { 
-  0%, 100% { transform: translateX(0); } 
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); } 
-  20%, 40%, 60%, 80% { transform: translateX(5px); } 
+  0%, 100% { 
+    transform: translateX(0); 
+  } 
+  10%, 30%, 50%, 70%, 90% { 
+    transform: translateX(-5px); 
+  } 
+  20%, 40%, 60%, 80% { 
+    transform: translateX(5px); 
+  } 
 }
 
 @keyframes itemSpawn { 
-  from { transform: scale(0); opacity: 0; } 
-  to { transform: scale(1); opacity: 1; } 
+  from { 
+    transform: scale(0); 
+    opacity: 0; 
+  } 
+  to { 
+    transform: scale(1); 
+    opacity: 1; 
+  } 
+}
+
+@keyframes starPulse { 
+  from { 
+    transform: scale(1); 
+    opacity: 1; 
+  } 
+  to { 
+    transform: scale(1.2); 
+    opacity: 0.85; 
+  } 
 }
 
 .item-spawn { 
   animation: itemSpawn 0.3s ease-out; 
+}
+
+.game-over-animation {
+  animation: shake 0.5s ease-in-out;
 }
 
 /* Responsive Design */
@@ -477,44 +629,43 @@ body::before {
     font-size: 4rem; 
   }
   
-  .difficulty-buttons {
+  .difficulty-buttons, .map-buttons {
     flex-direction: column;
     align-items: center;
   }
   
-  .difficulty-btn {
-    min-width: 120px;
+  .difficulty-btn, .map-btn {
+    min-width: 150px;
   }
 }
 
 
-
-/* === Map Selector === */
-.map-selector { margin-bottom: 25px; }
-.map-buttons { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom: 20px; }
-.map-btn {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: var(--transition);
-  font-size: .85rem;
-  display: inline-flex; align-items:center; gap:6px;
-}
-.map-btn:hover { background: rgba(0,212,255,0.18); color: var(--text-accent); }
-.map-btn.active { background: var(--button-primary); color: var(--primary-bg); border-color: transparent; }
-
-/* === Obstacles === */
-.obstacle {
-  background: linear-gradient(135deg, #555, #333);
-  border-radius: 3px;
-  box-shadow: inset 0 0 5px rgba(0,0,0,.5), 0 0 5px rgba(255,255,255,.08);
+.credits {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    color: #aaa;
+    font-size: 0.8em;
+    font-family: 'Roboto', sans-serif;
 }
 
-/* === New Fruits === */
-.food.banana { background: linear-gradient(135deg,#feca57,#ff9f43); box-shadow:0 0 10px rgba(254,202,87,.6); }
-.food.chili  { background: linear-gradient(135deg,#ff6b6b,#ff3838); box-shadow:0 0 10px rgba(255,107,107,.6); }
-.food.star   { background: linear-gradient(135deg,#fff200,#f9ca24); box-shadow:0 0 15px rgba(255,242,0,.7); animation: starPulse .5s infinite alternate; }
-@keyframes starPulse { from{transform:scale(1);opacity:1} to{transform:scale(1.2);opacity:.85} }
+
+
+
+.lang-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    margin: 0 5px;
+}
+
+.lang-btn img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+
